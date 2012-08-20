@@ -343,14 +343,16 @@
 			curl_setopt($curl, CURLOPT_CAINFO, dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacert.pem');
 			curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
 
-			$data = curl_exec($curl); 
-			
+			$data = curl_exec($curl);
+
 			if (curl_errno($curl) !== 0) {
 				throw new \Exception("cURL error: " . curl_error($curl));
 			}
+			$response_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 			curl_close($curl);
 
 			$response =  json_decode($data);
+			$response->status = $response_status;
 			if (is_null($response)) {
 				$err = json_last_error();
 				if ($err == JSON_ERROR_SYNTAX) {
